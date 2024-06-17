@@ -60,6 +60,16 @@ class RegistrationView(generics.GenericAPIView):
         return Response({'status': 'Verify your email', 'user': user_data}, status=status.HTTP_201_CREATED) 
 
 
+class RetrieveUserAPIView(generics.RetrieveDestroyAPIView):
+
+    """API view responsible for retrieving a user"""
+
+    serializer_class = serializers.UserSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_object(self):
+        return get_user_model().objects.get(email=self.kwargs.get('email'))
+
 
 class EmailVerificationView(views.APIView):
     
@@ -206,10 +216,52 @@ class PasswordResetAPIView(views.APIView):
         return Response({'status':'Password successfully reset'}, status=status.HTTP_200_OK)
     
 
+class VerifyTokenAPIView(views.APIView):
+
+    """API view responsible for verifying token"""
+
+    serializer_class = serializers.TokenVerificationSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.validated_data['token']
+
+        try:    
+            user_token = Token.objects.get(key=token)
+        except Token.DoesNotExist:
+            return Response({'status' : 'Invalid Token'})
+        
+        user = get_user_model().objects.get(id=user_token.user.id)
+
+        return Response({
+            'status':'Valid Token',
+            'token': Token.objects.get(user=user).key,
+            'user_id': user.pk,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'date_joined': {
+                'year': user.date_joined.year,
+                'month': user.date_joined.month,
+                'day': user.date_joined.day,
+                'time': user.date_joined.time().strftime('%H:%M:%S')            
+            },
+            'date_updated': {
+                'year': user.date_joined.year,
+                'month': user.date_joined.month,
+                'day': user.date_joined.day,
+                'time': user.date_joined.time().strftime('%H:%M:%S')            
+            }
+        })
+        
+
 
 class AuthTokenAPIView(ObtainAuthToken):
     
-    """API view for obtaning authentication token"""
+    """API view responsible for obtaining authentication token"""
     
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.AuthTokenSerializer
@@ -225,6 +277,7 @@ class AuthTokenAPIView(ObtainAuthToken):
         return Response({
             'token': str(token),
             'user_id': user.pk,
+            'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,
             'date_joined': {

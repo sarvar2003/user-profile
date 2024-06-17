@@ -45,7 +45,7 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
     
     """Serializer class for email verification of users"""
 
-    token = serializers.CharField(max_length=555)
+    token = serializers.CharField(trim_whitespace=True)
     
     class Meta:
         model = get_user_model()
@@ -123,3 +123,10 @@ class AuthTokenSerializer(serializers.ModelSerializer):
         attrs['user'] = user
 
         return attrs
+
+
+class TokenVerificationSerializer(serializers.Serializer):
+
+    """Serializer class for token verification"""
+    
+    token = serializers.CharField(trim_whitespace=True)
