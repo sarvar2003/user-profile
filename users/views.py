@@ -202,7 +202,8 @@ class PasswordResetAPIView(views.APIView):
 
         serializer.is_valid(raise_exception=True)
 
-        new_password = serializer.data.get('confirm_password')
+        new_password = serializer.data['confirm_password']
+        print(f'New password - {new_password}')
 
         user_token = Token.objects.get(key=token)
 

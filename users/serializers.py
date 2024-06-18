@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ['email', 'password', 'confirm_password', 'first_name', 'last_name', 'date_joined', 'date_updated', 'is_staff', 'is_active', 'is_verified']
         extra_kwargs = {
-            'password': {'style' : {'input_type': 'password'}},
+            'password': {'write_only': True, 'style' : {'input_type': 'password'}},
             'date_joined': {'read_only': True},
             'date_updated': {'read_only': True},
             'is_verified': {'read_only': True},
@@ -68,8 +68,8 @@ class ResetPasswordSerializer(serializers.Serializer):
 
     """Serializer class for resetting password"""
 
-    password = serializers.CharField(max_length=250, write_only=True, style={'input_type': 'password'})
-    confirm_password = serializers.CharField(max_length=250, write_only=True, style={'input_type': 'password'})
+    password = serializers.CharField(max_length=250, style={'input_type': 'password'})
+    confirm_password = serializers.CharField(max_length=250, style={'input_type': 'password'})
 
     def validate(self, attrs, *args, **kwargs):
 
@@ -78,6 +78,8 @@ class ResetPasswordSerializer(serializers.Serializer):
 
         if password != confirm_password:
             raise ValidationError(_('Passwords did noy match'))
+
+        print(attrs)
 
         return super().validate(attrs)
 
