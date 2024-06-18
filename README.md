@@ -31,36 +31,15 @@ To run this project locally, ensure you have the following installed:
    ```bash
    cd user-profile
    ```
-
-3. **Create and activate a virtual environment:**
-   ```bash
-   python -m venv env
-   source env/bin/activate   # On Windows use `env\Scripts\activate`
-   ```
-
-4. **Install the project dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-5. **Apply the database migrations:**
-   ```bash
-   python manage.py migrate
-   ```
-
-6. **Create a superuser for accessing the Django admin interface:**
-   ```bash
-   python manage.py createsuperuser
-   ```
-
+   
 ### Running the Application
 
 1. **Start the Django development server:**
    ```bash
-   python manage.py runserver
+   make run
    ```
 
-2. **Open your browser and go to:**
+3. **Open your browser and go to:**
    ```
    http://localhost:8000
    ```
