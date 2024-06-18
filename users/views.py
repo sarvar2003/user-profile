@@ -8,6 +8,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from rest_framework.settings import api_settings
 
 from . import serializers, utils
@@ -59,7 +60,7 @@ class RegistrationView(generics.GenericAPIView):
         # Sending verification email
         user = get_user_model().objects.get(email=user_data["email"])
 
-        token, _ = Token.objects.get_or_create(user=user)
+        token, created_at  = Token.objects.get_or_create(user=user)
         current_site_domain = get_current_site(request).domain
         relativeLink = reverse("verify-email", kwargs={"token": token})
         verification_link = "http://" + current_site_domain + relativeLink
@@ -151,7 +152,7 @@ class SendEmailVerificationView(views.APIView):
         try:
             user = get_user_model().objects.get(email=email)
 
-            token, _ = Token.objects.get_or_create(user=user)
+            token, created_at = Token.objects.get_or_create(user=user)
             current_site_domain = get_current_site(request).domain
             relativeLink = reverse("verify-email", kwargs={"token": token})
             verification_link = "http://" + current_site_domain + relativeLink
@@ -192,7 +193,7 @@ class SendPasswordResetEmailAPIView(views.APIView):
         try:
             user = get_user_model().objects.get(email=email)
 
-            token, _ = Token.objects.get_or_create(user=user)
+            token, created_at = Token.objects.get_or_create(user=user)
             current_site_domain = get_current_site(request).domain
             relativeLink = reverse("reset-password", kwargs={"token": token})
             absolute_url = "http://" + current_site_domain + relativeLink
@@ -329,7 +330,7 @@ class AuthTokenAPIView(ObtainAuthToken):
         print(request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
-        token, _ = Token.objects.get_or_create(user=user)
+        token, created_at = Token.objects.get_or_create(user=user)
 
         return Response(
             {
