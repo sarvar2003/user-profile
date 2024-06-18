@@ -2,7 +2,7 @@
 
 # User Profile Project
 
-Welcome to the User Profile Project! This repository demonstrates how to manage user profiles using Django, a high-level Python web framework.
+Welcome to the User Profile Project! This is fully dockerized user profiles django project that uses token authentication to authenticate users
 
 ## Features
 
