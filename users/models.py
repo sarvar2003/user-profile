@@ -16,21 +16,17 @@ class UserManager(BaseUserManager):
     """
 
 
-    def create_user(self, email, first_name, last_name, password, **extra_fields):
+    def create_user(self, email, first_name, last_name, password=None, **extra_fields):
         
         """Creates user using email, password and additional fields"""        
 
         if not email:
             raise ValueError('Email is required, please enter your email')
         
-        user = self.model(
-            email=self.normalize_email(email),
-            first_name=first_name, 
-            last_name=last_name, 
-            **extra_fields
-        )
-        
+        user = self.model(email=self.normalize_email(email), first_name=first_name, last_name=last_name, **extra_fields)
+
         user.set_password(password)
+
         user.save(using=self._db)
         
         return user
@@ -66,9 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    
     REQUIRED_FIELDS = ['first_name', 'last_name']
-
 
     def __str__(self) -> str:
         return self.email

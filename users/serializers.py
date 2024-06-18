@@ -33,12 +33,10 @@ class UserSerializer(serializers.ModelSerializer):
         if password != confirm_password:
             raise ValidationError(_("Passwords didn't match"))
 
-        attrs['password'] = make_password(password)
-        
         return attrs
 
     def create(self, validated_data):
-        return get_user_model().objects.create(**validated_data)
+        return get_user_model().objects.create_user(**validated_data)
 
 
 class EmailVerificationSerializer(serializers.ModelSerializer):
@@ -85,24 +83,19 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 
 
-class AuthTokenSerializer(serializers.ModelSerializer):
+class AuthTokenSerializer(serializers.Serializer):
     
     """Serializer class for authenticating user"""
 
     email = serializers.EmailField(max_length=255, min_length=3)
     password = serializers.CharField(max_length=68, min_length=8, write_only=True, style={'input_type':'password'})
-    
-
-    class Meta:
-        model = get_user_model()
-        fields = ['email', 'password']
 
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
 
 
-        user = authenticate(request=self.context.get('request'), email=email, password=password)
+        user = authenticate(request=self.context.get('request'), username=email, password=password)
 
         print(user)
 

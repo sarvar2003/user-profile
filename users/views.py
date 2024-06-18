@@ -209,7 +209,7 @@ class PasswordResetAPIView(views.APIView):
         user = get_user_model().objects.get(id=user_token.user.id)
 
 
-        user.set_password(make_password(new_password))
+        user.set_password(new_password)
 
         user.save()
 
