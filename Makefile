@@ -1,37 +1,20 @@
-# Makefile for Django project
+run:
+	docker-compose up --build
 
-MANAGE=python manage.py
+stop:
+	docker-compose stop
 
-.PHONY: help runserver migrate makemigrations collectstatic test shell
+shell:
+	docker-compose run --rm web python manage.py shell
 
-help:
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+superuser:
+	docker-compose run --rm web python manage.py createsuperuser
 
-runserver: # Run the Django development server
-	$(MANAGE) runserver
+migrations:
+	docker-compose run --rm web python manage.py makemigrations
 
-migrate: #Apply database migrations
-	$(MANAGE) migrate
+migrate:
+	docker-compose run --rm web python manage.py migrate
 
-makemigrations: # Create new database migrations based on changes to models
-	$(MANAGE) makemigrations
-
-collectstatic: # Collect static files into STATIC_ROOT
-	$(MANAGE) collectstatic --noinput
-
-test: # Run tests
-	$(MANAGE) test
-
-shell: # Open the Django shell
-	$(MANAGE) shell
-
-createsuperuser: # Create a superuser
-	$(MANAGE) createsuperuser
-
-check: # Check for any errors in the project
-	$(MANAGE) check
-
-showmigrations: # Show all migrations and their status
-	$(MANAGE) showmigrations
-
-start: migrate makemigrations runserver # Migrate, collect static files, and run the server
+sync_migrate:
+	docker-compose run --rm web python manage.py migrate --run-syncdb 
